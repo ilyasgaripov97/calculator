@@ -1,4 +1,4 @@
-let displayValue = 0;
+let displayValue;
 
 function add(a, b) {
   return a + b;
@@ -27,65 +27,55 @@ function operate(a, b, operator) {
   return operationMapping[operator](a, b);
 }
 
-const operationStatus = {
-  firstOperand: null,
-  operator: null,
-  secondOperand: null,
-}
-
-function resetOperationStatus() {
-  for (let key in operationStatus) {
-    key = null;
-  }
-}
-
-function doOperation() {
-}
-
-function isOperationReady() {
-  return operationStatus.firstOperand && operationStatus.operator && operationStatus.secondOperand
-}
-
-function populateDisplay() {
+function populateDisplay(value) {
   const displayOutput = document.querySelector('.display__output');
   const digitKeys = document.querySelectorAll('.keys__digit');
-  const operationsKeys = document.querySelectorAll('.keys__operation');
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
-      console.log('digit', operationStatus)
-
-      // check if operation is ready to be done
-      // append one number to display until operation button were pressed
       const digit = e.target.value;
       displayOutput.textContent += digit;
-    })
-  })
-
-  operationsKeys.forEach(operation => {
-    operation.addEventListener('click', e => {
       displayValue = parseInt(displayOutput.textContent);
-      console.log('operator', operationStatus)
-
-
-      // add first operand to status
-      if (operationStatus.firstOperand === null) {
-        operationStatus.firstOperand = displayValue
-
-        if (operationStatus.operator === null) {
-          operationStatus.operator = e.target.value;
-        }
-        displayOutput.textContent = '';
-      } else {
-        operationStatus.secondOperand = displayValue;
-        displayOutput.textContent = operate(operationStatus.firstOperand,operationStatus.secondOperand, operationStatus.operator);
-        resetOperationStatus();
-      }
-      // clear display
     })
   })
+}
 
+const currentOperation = {
+  firstOperand: null,
+  secondOperand: null,
+  operator: null,
+}
+
+function doOperation() {
+  const displayOutput = document.querySelector('.display__output');
+  // decl variable for operator
+  let operator = null;
+
+  const operationKeys = document.querySelectorAll('.keys__operation');
+  operationKeys.forEach(key => {
+    key.addEventListener('click', e => {
+      // if first operand not filled, fill it with current display value
+      // else if second operand is not filled, fill it with display value
+      if (currentOperation.firstOperand === null) {
+        currentOperation.firstOperand = displayValue;
+      } else if (currentOperation.secondOperand === null) {
+        currentOperation.secondOperand =displayValue
+      }
+      // when user clicks operation key, change operator state inside current operation
+      operator = e.target.value;
+      currentOperation.operator = operator;
+
+      // if all current operation is ready, call operate function on it
+      if (currentOperation.firstOperand !== null && currentOperation.secondOperand !== null && currentOperation.operator !== null) {
+        console.log(operate(currentOperation.firstOperand, currentOperation.secondOperand, currentOperation.operator));
+      }
+      // clear display and display value
+      displayValue = null;
+      displayOutput.textContent = '';
+    })
+  })
 
 }
 
 populateDisplay();
+doOperation();
