@@ -27,51 +27,70 @@ function operate(a, b, operator) {
   return operationMapping[operator](a, b);
 }
 
-function populateDisplay(value) {
+let currentOperation = {
+  a: null,
+  b: null,
+  operator: null,
+}
+
+function populateDisplay() {
   const displayOutput = document.querySelector('.display__output');
   const digitKeys = document.querySelectorAll('.keys__digit');
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
+      if (currentOperation.b === null) {
+        displayOutput.textContent = ''
+      }
       const digit = e.target.value;
       displayOutput.textContent += digit;
-      displayValue = parseInt(displayOutput.textContent);
     })
   })
 }
 
-const currentOperation = {
-  firstOperand: null,
-  secondOperand: null,
-  operator: null,
+function isOperationReady(operation) {
+  return operation.a && operation.b && operation.operator;
 }
 
 function doOperation() {
   const displayOutput = document.querySelector('.display__output');
-  // decl variable for operator
   let operator = null;
+
+
+  // create an operation object to fill
 
   const operationKeys = document.querySelectorAll('.keys__operation');
   operationKeys.forEach(key => {
     key.addEventListener('click', e => {
-      // if first operand not filled, fill it with current display value
-      // else if second operand is not filled, fill it with display value
-      if (currentOperation.firstOperand === null) {
-        currentOperation.firstOperand = displayValue;
-      } else if (currentOperation.secondOperand === null) {
-        currentOperation.secondOperand =displayValue
-      }
-      // when user clicks operation key, change operator state inside current operation
-      operator = e.target.value;
-      currentOperation.operator = operator;
 
-      // if all current operation is ready, call operate function on it
-      if (currentOperation.firstOperand !== null && currentOperation.secondOperand !== null && currentOperation.operator !== null) {
-        console.log(operate(currentOperation.firstOperand, currentOperation.secondOperand, currentOperation.operator));
+      // parse value from display
+      displayValue = parseInt(displayOutput.textContent);
+
+      // store operator into variable
+      operator = e.target.value;
+      if (currentOperation.operator === null) currentOperation.operator = operator;
+
+      // fill first or second operand
+      if (currentOperation.a === null) {
+        currentOperation.a = displayValue;
+      } else if (currentOperation.b === null) {
+        currentOperation.b = displayValue;
       }
-      // clear display and display value
-      displayValue = null;
-      displayOutput.textContent = '';
+
+      console.log(currentOperation)
+      // check if operation is ready
+      if (isOperationReady(currentOperation) !== null) {
+        displayValue = operate(currentOperation.a, currentOperation.b, currentOperation.operator)
+        displayOutput.textContent = displayValue;
+
+        currentOperation.a = displayValue;
+        currentOperation.b = null;
+      }
+
+      // call operate(displayValue, ?, operator)
+      // displayOutput.textContent = operate(displayValue, 1,operator);
+
+      // clear display
     })
   })
 
