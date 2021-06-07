@@ -35,12 +35,27 @@ let currentOperation = {
   operator: null,
 }
 
+function resetCurrentOperation() {
+  for (let key in currentOperation) {
+    currentOperation[key] = null;
+  }
+}
+
+function unselectOperators() {
+  const operators = document.querySelectorAll('.keys__operator');
+  operators.forEach(operator => operator.classList.remove('selected-operator'))
+}
+
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
+      if (currentOperation.a !== null) clearDisplay();
+
+      unselectOperators();
       populateDisplay(e.target.value);
+
     })
   });
 }
@@ -50,7 +65,22 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
-      selectOperator(e.target);
+      if (currentOperation.operator === null) selectOperator(e.target);
+
+      // fill first operand with display value
+      if (currentOperation.a === null) {
+        currentOperation.a = parseInt(display.textContent)
+      } else if (currentOperation.b === null) {
+        currentOperation.b = parseInt(display.textContent)
+      }
+
+      // if user click = sign, call operate
+      if (e.target.value === '=') {
+        let result = operate(currentOperation.a, currentOperation.b,currentOperation.operator);
+        console.log(currentOperation, result);
+        display.textContent = result.toString();
+        resetCurrentOperation();
+      }
     })
   })
 }
@@ -58,11 +88,6 @@ function operatorPressListener() {
 function handleInputs() {
   digitPressListener();
   operatorPressListener();
-}
-
-function unselectOperators() {
-  const operators = document.querySelectorAll('.keys__operator');
-  operators.forEach(operator => operator.classList.remove('selected-operator'))
 }
 
 function selectOperator(target) {
@@ -74,9 +99,12 @@ function selectOperator(target) {
   currentOperation.operator = target.value;
 }
 
+function clearDisplay() {
+  display.textContent = '';
+}
+
 function populateDisplay(value) {
   display.textContent += value;
-  currentOperation.a = parseInt(display.textContent );
 }
 
 handleInputs();
