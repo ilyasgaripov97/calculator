@@ -53,7 +53,7 @@ function digitPressListener() {
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
-      // if (currentOperation.a !== null && currentOperation.operator !== null) clearDisplay();
+
       if (typingSecondOperand) {
         clearDisplay()
         typingSecondOperand = false;
@@ -70,6 +70,7 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
+
       if (currentOperation.operator === null) {
         selectOperator(e.target);
         typingSecondOperand = true;
@@ -78,24 +79,29 @@ function operatorPressListener() {
       // fill first operand with display value
       if (currentOperation.a === null) {
         currentOperation.a = parseInt(display.textContent)
-      } else if (currentOperation.b === null) {
-        currentOperation.b = parseInt(display.textContent)
       }
 
-      // if user click = sign, call operate
-      if (e.target.value === '=') {
-        let result = operate(currentOperation.a, currentOperation.b,currentOperation.operator);
-        console.log(currentOperation, result);
-        display.textContent = result.toString();
-        resetCurrentOperation();
-      }
     })
+  })
+}
+
+function equalPressListener() {
+  const equalKey = document.querySelector('.keys__equal-operator');
+
+  equalKey.addEventListener('click', e => {
+    if (currentOperation.b === null) {
+      currentOperation.b = parseInt(display.textContent)
+    }
+    let result = operate(currentOperation.a, currentOperation.b,currentOperation.operator);
+    display.textContent = result.toString();
+    resetCurrentOperation();
   })
 }
 
 function handleInputs() {
   digitPressListener();
   operatorPressListener();
+  equalPressListener();
 }
 
 function selectOperator(target) {
