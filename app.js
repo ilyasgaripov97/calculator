@@ -33,6 +33,12 @@ const operationStatus = {
   secondOperand: null,
 }
 
+function resetOperationStatus() {
+  for (let key in operationStatus) {
+    key = null;
+  }
+}
+
 function doOperation() {
 }
 
@@ -47,10 +53,10 @@ function populateDisplay() {
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
-      if (operationStatus.firstOperand !== null && operationStatus.operator !== null) {
-        displayOutput.textContent = '';
-      }
+      console.log('digit', operationStatus)
 
+      // check if operation is ready to be done
+      // append one number to display until operation button were pressed
       const digit = e.target.value;
       displayOutput.textContent += digit;
     })
@@ -58,29 +64,24 @@ function populateDisplay() {
 
   operationsKeys.forEach(operation => {
     operation.addEventListener('click', e => {
-      // if operator was pressed, means that we have full number
       displayValue = parseInt(displayOutput.textContent);
-      console.log(displayValue)
+      console.log('operator', operationStatus)
 
-      // check if operation is ready to be done, it happen when we fill two operands and operator
-      if (isOperationReady()) {
-        operate(operationStatus.firstOperand, operationStatus.secondOperand, operationStatus.secondOperand);
-      }
 
-      // check status of the first operand if it is not empty, try to fill second operand
-      // if it is also not empty,
+      // add first operand to status
       if (operationStatus.firstOperand === null) {
-        operationStatus.firstOperand = displayValue;
-        displayValue = 0;
-      }
-      if (operationStatus.operator === null) {
-        operationStatus.operator = e.target.value;
-      }
-      else if (operationStatus.secondOperand === null) {
-        operationStatus.secondOperand = displayValue;
-      }
-      console.log(operationStatus);
+        operationStatus.firstOperand = displayValue
 
+        if (operationStatus.operator === null) {
+          operationStatus.operator = e.target.value;
+        }
+        displayOutput.textContent = '';
+      } else {
+        operationStatus.secondOperand = displayValue;
+        displayOutput.textContent = operate(operationStatus.firstOperand,operationStatus.secondOperand, operationStatus.operator);
+        resetOperationStatus();
+      }
+      // clear display
     })
   })
 
