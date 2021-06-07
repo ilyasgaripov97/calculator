@@ -29,18 +29,10 @@ function operate(a, b, operator) {
 
 const display = document.querySelector('.display__output');
 
-let currentOperation = {
+let operationState = {
   a: null,
   b: null,
   operator: null,
-}
-
-let typingSecondOperand = false;
-
-function resetCurrentOperation() {
-  for (let key in currentOperation) {
-    currentOperation[key] = null;
-  }
 }
 
 function unselectOperators() {
@@ -53,12 +45,6 @@ function digitPressListener() {
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
-
-      if (typingSecondOperand) {
-        clearDisplay()
-        typingSecondOperand = false;
-      }
-
       unselectOperators();
       populateDisplay(e.target.value);
     })
@@ -71,14 +57,13 @@ function operatorPressListener() {
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
 
-      if (currentOperation.operator === null) {
-        selectOperator(e.target);
-        typingSecondOperand = true;
-      }
+      setOperator(e.target);
 
-      // fill first operand with display value
-      if (currentOperation.a === null) {
-        currentOperation.a = parseInt(display.textContent)
+      if (operationState.b === null && operationState.a !== null) {
+        setOperand('b', parseInt(display.textContent))
+      }
+      if (operationState.a === null && operationState.b === null) {
+        setOperand('a', parseInt(display.textContent));
       }
 
     })
@@ -89,36 +74,32 @@ function equalPressListener() {
   const equalKey = document.querySelector('.keys__equal-operator');
 
   equalKey.addEventListener('click', e => {
-    if (currentOperation.b === null) {
-      currentOperation.b = parseInt(display.textContent)
-    }
-    let result = operate(currentOperation.a, currentOperation.b,currentOperation.operator);
-    display.textContent = result.toString();
-    resetCurrentOperation();
+
   })
 }
 
-function handleInputs() {
-  digitPressListener();
-  operatorPressListener();
-  equalPressListener();
+function setOperator(target) {
+  unselectOperators();
+  target.classList.add('selected-operator');
+  operationState.operator = target.value;
 }
 
-function selectOperator(target) {
-  // unselect all selected operators
-  unselectOperators();
-  // colorize selected operator
-  target.classList.add('selected-operator');
-  // store inside current operation
-  currentOperation.operator = target.value;
+function setOperand(prop, value) {
+  operationState[prop] = value;
+}
+
+function populateDisplay(value) {
+  display.textContent += value;
 }
 
 function clearDisplay() {
   display.textContent = '';
 }
 
-function populateDisplay(value) {
-  display.textContent += value;
+function handleInputs() {
+  digitPressListener();
+  operatorPressListener();
+  equalPressListener();
 }
 
 handleInputs();
