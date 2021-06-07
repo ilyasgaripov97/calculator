@@ -52,3 +52,7 @@ button:hover {
     background-color: #e8e6e6;
     cursor: pointer;
 }
+
+.selected-operator {
+    background-color: #e8e6e6;
+}

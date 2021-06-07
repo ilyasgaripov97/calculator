@@ -50,7 +50,7 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
-      console.log(e.target.value);
+      selectOperator(e.target);
     })
   })
 }
@@ -58,6 +58,20 @@ function operatorPressListener() {
 function handleInputs() {
   digitPressListener();
   operatorPressListener();
+}
+
+function unselectOperators() {
+  const operators = document.querySelectorAll('.keys__operator');
+  operators.forEach(operator => operator.classList.remove('selected-operator'))
+}
+
+function selectOperator(target) {
+  // unselect all selected operators
+  unselectOperators();
+  // colorize selected operator
+  target.classList.add('selected-operator');
+  // store inside current operation
+  currentOperation.operator = target.value;
 }
 
 function populateDisplay(value) {
