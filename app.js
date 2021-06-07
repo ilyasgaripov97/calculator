@@ -35,6 +35,8 @@ let currentOperation = {
   operator: null,
 }
 
+let typingSecondOperand = false;
+
 function resetCurrentOperation() {
   for (let key in currentOperation) {
     currentOperation[key] = null;
@@ -51,11 +53,14 @@ function digitPressListener() {
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
-      if (currentOperation.a !== null) clearDisplay();
+      // if (currentOperation.a !== null && currentOperation.operator !== null) clearDisplay();
+      if (typingSecondOperand) {
+        clearDisplay()
+        typingSecondOperand = false;
+      }
 
       unselectOperators();
       populateDisplay(e.target.value);
-
     })
   });
 }
@@ -65,7 +70,10 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
-      if (currentOperation.operator === null) selectOperator(e.target);
+      if (currentOperation.operator === null) {
+        selectOperator(e.target);
+        typingSecondOperand = true;
+      }
 
       // fill first operand with display value
       if (currentOperation.a === null) {
