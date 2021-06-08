@@ -39,7 +39,7 @@ let operationState = {
 let enteringSecondOperand = false;
 
 function isOperationReady() {
-  return operationState.a && operationState.b && operationState.operator;
+  return operationState.a !== null &&  operationState.b !== null && operationState.operator !== null;
 }
 
 function processOperation() {
@@ -83,7 +83,6 @@ function operatorPressListener() {
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
       const displayValue = parseInt(display.textContent);
-      // todo fix some buggy behaviour when 0 plus something gives 0
       if (operationState.a !== null && operationState.b === null) {
         setOperand('b', displayValue);
       }
