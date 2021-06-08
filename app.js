@@ -13,7 +13,16 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+  if (b === 0) {
+    return 'Division by 0 not allowed';
+  }
   return a / b;
+}
+
+const display = document.querySelector('.display__output');
+
+function getDisplayData() {
+  return parseInt(display.textContent)
 }
 
 const operationMapping = {
@@ -21,13 +30,12 @@ const operationMapping = {
   '-': subtract,
   '*': multiply,
   '/': divide,
+  '=': getDisplayData,
 }
 
 function operate(a, b, operator) {
   return operationMapping[operator](a, b);
 }
-
-const display = document.querySelector('.display__output');
 
 let operationState = {
   a: null,
@@ -38,29 +46,17 @@ let operationState = {
 let enteringSecondOperand = false;
 
 function isOperationReady() {
-  return operationState.a && operationState.b && operationState.operator;
+  return operationState.a !== null &&  operationState.b !== null && operationState.operator !== null;
 }
 
 function processOperation() {
-  // call operate on operation state
   let result = operate(operationState.a, operationState.b, operationState.operator);
-
-  // update display with result
+  console.log(result)
   updateDisplay(result);
-
-  // make result to be first operand of next operation (change operation state)
   operationState.a = result;
-
-  // make second operand of operation state to be null
   operationState.b = null;
-
-  // make operator of operation state to be null
   operationState.operator = null;
-
-  // set entering second operand to be true
   enteringSecondOperand = true;
-
-  // unselect operators in gui
   unselectOperators();
 }
 
@@ -69,20 +65,53 @@ function unselectOperators() {
   operators.forEach(operator => operator.classList.remove('selected-operator'))
 }
 
+function startEnteringSecondOperand(msg) {
+  if (enteringSecondOperand === true) {
+    clearDisplay();
+    msg = '';
+    enteringSecondOperand = false;
+  }
+  return msg;
+}
+
+function handleOperatorClick(operator) {
+  const displayValue = parseInt(display.textContent);
+  if (operationState.a !== null && operationState.b === null) {
+    setOperand('b', displayValue);
+  }
+  if (operationState.a === null && operationState.b === null) {
+    setOperand('a', displayValue);
+    enteringSecondOperand = true;
+  }
+  if (isOperationReady()) {
+    processOperation();
+  }
+  setOperator(operator);
+  // e.target.classList.add('selected-operator');
+}
+
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
+  const digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  const operators = [...Object.keys(operationMapping)];
+
   let msg = '';
+
+  document.addEventListener('keydown', e => {
+    msg = startEnteringSecondOperand(msg);
+    if (digits.includes(e.key)) {
+      msg += e.key.toString();
+      updateDisplay(msg)
+    }
+    if (operators.includes(e.key)) {
+      handleOperatorClick(e.key);
+    }
+  })
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
       unselectOperators();
-
-      if (enteringSecondOperand === true) {
-        clearDisplay();
-        msg = '';
-        enteringSecondOperand = false;
-      }
-
+      msg = startEnteringSecondOperand(msg);
       msg += e.target.value;
       updateDisplay(msg);
     })
@@ -91,46 +120,20 @@ function digitPressListener() {
 
 function operatorPressListener() {
   const operatorKeys = document.querySelectorAll('.keys__operator');
+  const clearKey = document.querySelector('.keys__clear');
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
-      // get current display value
-      let displayValue = parseInt(display.textContent);
-
-      // set operand 2 if not set yet
-      if (operationState.a !== null && operationState.b === null) {
-        setOperand('b', displayValue);
-      }
-      // set operand 1 if not set yet
-      if (operationState.a === null && operationState.b === null) {
-        setOperand('a', displayValue);
-        enteringSecondOperand = true;
-      }
-      // if operation is ready then process it
-      if (isOperationReady()) {
-        console.log(operationState)
-        processOperation();
-      }
-      // if operation is not ready then set operator
-      if (!isOperationReady()) {
-        setOperator(e.target);
-      }
+      handleOperatorClick(e.target.value);
     })
-  })
+  });
+
+  clearKey.addEventListener('click', e => clearState())
 }
 
-function equalPressListener() {
-  const equalKey = document.querySelector('.keys__equal-operator');
-
-  equalKey.addEventListener('click', e => {
-
-  })
-}
-
-function setOperator(target) {
+function setOperator(value) {
   unselectOperators();
-  target.classList.add('selected-operator');
-  operationState.operator = target.value;
+  operationState.operator = value;
 }
 
 function setOperand(prop, value) {
@@ -145,10 +148,17 @@ function clearDisplay() {
   display.textContent = '';
 }
 
+function clearState() {
+  operationState.a = null;
+  operationState.b = null;
+  operationState.operator = null;
+
+  clearDisplay();
+}
+
 function handleInputs() {
   digitPressListener();
   operatorPressListener();
-  equalPressListener();
 }
 
 handleInputs();
