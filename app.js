@@ -21,6 +21,7 @@ const operationMapping = {
   '-': subtract,
   '*': multiply,
   '/': divide,
+  '=': () => {},
 }
 
 function operate(a, b, operator) {
@@ -42,25 +43,12 @@ function isOperationReady() {
 }
 
 function processOperation() {
-  // call operate on operation state
   let result = operate(operationState.a, operationState.b, operationState.operator);
-
-  // update display with result
   updateDisplay(result);
-
-  // make result to be first operand of next operation (change operation state)
   operationState.a = result;
-
-  // make second operand of operation state to be null
   operationState.b = null;
-
-  // make operator of operation state to be null
   operationState.operator = null;
-
-  // set entering second operand to be true
   enteringSecondOperand = true;
-
-  // unselect operators in gui
   unselectOperators();
 }
 
@@ -94,36 +82,20 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
-      // get current display value
-      let displayValue = parseInt(display.textContent);
+      const displayValue = parseInt(display.textContent);
 
-      // set operand 2 if not set yet
       if (operationState.a !== null && operationState.b === null) {
         setOperand('b', displayValue);
       }
-      // set operand 1 if not set yet
       if (operationState.a === null && operationState.b === null) {
         setOperand('a', displayValue);
         enteringSecondOperand = true;
       }
-      // if operation is ready then process it
       if (isOperationReady()) {
-        console.log(operationState)
         processOperation();
       }
-      // if operation is not ready then set operator
-      if (!isOperationReady()) {
-        setOperator(e.target);
-      }
+      setOperator(e.target);
     })
-  })
-}
-
-function equalPressListener() {
-  const equalKey = document.querySelector('.keys__equal-operator');
-
-  equalKey.addEventListener('click', e => {
-
   })
 }
 
@@ -148,7 +120,6 @@ function clearDisplay() {
 function handleInputs() {
   digitPressListener();
   operatorPressListener();
-  equalPressListener();
 }
 
 handleInputs();
