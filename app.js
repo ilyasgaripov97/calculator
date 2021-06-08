@@ -64,6 +64,15 @@ function unselectOperators() {
   operators.forEach(operator => operator.classList.remove('selected-operator'))
 }
 
+function startEnteringSecondOperand(msg) {
+  if (enteringSecondOperand === true) {
+    clearDisplay();
+    msg = '';
+    enteringSecondOperand = false;
+  }
+  return msg;
+}
+
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
   const digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -72,11 +81,8 @@ function digitPressListener() {
   let msg = '';
 
   document.addEventListener('keydown', e => {
-    // check if key or operator were pressed
-    // if it is digit add it to msg
+    msg = startEnteringSecondOperand(msg);
     if (digits.includes(e.key)) msg += e.key.toString();
-    console.log(operators)
-    // update display
     updateDisplay(msg)
   })
 
@@ -84,13 +90,7 @@ function digitPressListener() {
 
     key.addEventListener('click', e => {
       unselectOperators();
-
-      if (enteringSecondOperand === true) {
-        clearDisplay();
-        msg = '';
-        enteringSecondOperand = false;
-      }
-
+      msg = startEnteringSecondOperand(msg);
       msg += e.target.value;
       updateDisplay(msg);
     })
