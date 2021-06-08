@@ -16,19 +16,24 @@ function divide(a, b) {
   return a / b;
 }
 
+const display = document.querySelector('.display__output');
+
+function getDisplayData() {
+  return parseInt(display.textContent)
+}
+
 const operationMapping = {
   '+': add,
   '-': subtract,
   '*': multiply,
   '/': divide,
-  '=': () => {},
+  '=': getDisplayData,
 }
 
 function operate(a, b, operator) {
   return operationMapping[operator](a, b);
 }
 
-const display = document.querySelector('.display__output');
 
 let operationState = {
   a: null,
