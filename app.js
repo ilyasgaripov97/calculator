@@ -66,9 +66,22 @@ function unselectOperators() {
 
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
+  const digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
+  const operators = [...Object.keys(operationMapping)];
+
   let msg = '';
 
+  document.addEventListener('keydown', e => {
+    // check if key or operator were pressed
+    // if it is digit add it to msg
+    if (digits.includes(e.key)) msg += e.key.toString();
+    console.log(operators)
+    // update display
+    updateDisplay(msg)
+  })
+
   digitKeys.forEach(key => {
+
     key.addEventListener('click', e => {
       unselectOperators();
 

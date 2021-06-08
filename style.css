@@ -22,13 +22,14 @@
 
     height: 100px;
     background-color: #fcfcfc;
-    border: 1px solid gainsboro;
+    border: 1px solid #333;
     border-radius: 28px;
     margin: 4px;
 }
 
 .calculator {
     padding: 16px;
+    background-color: #efefef;
     border: 1px solid #d2d2d2;
     border-radius: 28px;
 }
@@ -53,7 +54,7 @@ button {
 
     background-color: whitesmoke;
     border-radius: 28px;
-    border: 1px solid gainsboro;
+    border: 1px solid #333;
     margin: 4px;
     font-size: 16px;
 }
