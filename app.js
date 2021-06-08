@@ -83,7 +83,7 @@ function operatorPressListener() {
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
       const displayValue = parseInt(display.textContent);
-
+      // todo fix some buggy behaviour when 0 plus something gives 0
       if (operationState.a !== null && operationState.b === null) {
         setOperand('b', displayValue);
       }
