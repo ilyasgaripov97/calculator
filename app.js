@@ -37,7 +37,6 @@ function operate(a, b, operator) {
   return operationMapping[operator](a, b);
 }
 
-
 let operationState = {
   a: null,
   b: null,
@@ -99,7 +98,6 @@ function operatorPressListener() {
         setOperand('a', displayValue);
         enteringSecondOperand = true;
       }
-      console.log(operationState)
       if (isOperationReady()) {
         processOperation();
       }
