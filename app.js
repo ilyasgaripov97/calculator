@@ -51,6 +51,7 @@ function isOperationReady() {
 
 function processOperation() {
   let result = operate(operationState.a, operationState.b, operationState.operator);
+  console.log(result)
   updateDisplay(result);
   operationState.a = result;
   operationState.b = null;
@@ -73,6 +74,22 @@ function startEnteringSecondOperand(msg) {
   return msg;
 }
 
+function handleOperatorClick(operator) {
+  const displayValue = parseInt(display.textContent);
+  if (operationState.a !== null && operationState.b === null) {
+    setOperand('b', displayValue);
+  }
+  if (operationState.a === null && operationState.b === null) {
+    setOperand('a', displayValue);
+    enteringSecondOperand = true;
+  }
+  if (isOperationReady()) {
+    processOperation();
+  }
+  setOperator(operator);
+  // e.target.classList.add('selected-operator');
+}
+
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
   const digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -82,12 +99,16 @@ function digitPressListener() {
 
   document.addEventListener('keydown', e => {
     msg = startEnteringSecondOperand(msg);
-    if (digits.includes(e.key)) msg += e.key.toString();
-    updateDisplay(msg)
+    if (digits.includes(e.key)) {
+      msg += e.key.toString();
+      updateDisplay(msg)
+    }
+    if (operators.includes(e.key)) {
+      handleOperatorClick(e.key);
+    }
   })
 
   digitKeys.forEach(key => {
-
     key.addEventListener('click', e => {
       unselectOperators();
       msg = startEnteringSecondOperand(msg);
@@ -103,28 +124,16 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
-      const displayValue = parseInt(display.textContent);
-      if (operationState.a !== null && operationState.b === null) {
-        setOperand('b', displayValue);
-      }
-      if (operationState.a === null && operationState.b === null) {
-        setOperand('a', displayValue);
-        enteringSecondOperand = true;
-      }
-      if (isOperationReady()) {
-        processOperation();
-      }
-      setOperator(e.target);
+      handleOperatorClick(e.target.value);
     })
   });
 
   clearKey.addEventListener('click', e => clearState())
 }
 
-function setOperator(target) {
+function setOperator(value) {
   unselectOperators();
-  target.classList.add('selected-operator');
-  operationState.operator = target.value;
+  operationState.operator = value;
 }
 
 function setOperand(prop, value) {
