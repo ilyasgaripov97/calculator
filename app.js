@@ -13,6 +13,9 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+  if (b === 0) {
+    return 'Division by 0 not allowed';
+  }
   return a / b;
 }
 
@@ -84,6 +87,7 @@ function digitPressListener() {
 
 function operatorPressListener() {
   const operatorKeys = document.querySelectorAll('.keys__operator');
+  const clearKey = document.querySelector('.keys__clear');
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
@@ -95,12 +99,15 @@ function operatorPressListener() {
         setOperand('a', displayValue);
         enteringSecondOperand = true;
       }
+      console.log(operationState)
       if (isOperationReady()) {
         processOperation();
       }
       setOperator(e.target);
     })
-  })
+  });
+
+  clearKey.addEventListener('click', e => clearState())
 }
 
 function setOperator(target) {
@@ -119,6 +126,14 @@ function updateDisplay(value) {
 
 function clearDisplay() {
   display.textContent = '';
+}
+
+function clearState() {
+  operationState.a = null;
+  operationState.b = null;
+  operationState.operator = null;
+
+  clearDisplay();
 }
 
 function handleInputs() {

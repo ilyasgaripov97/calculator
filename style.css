@@ -50,6 +50,7 @@ button {
 
 button:hover {
     cursor: pointer;
+    background-color: #e2dede;
 }
 
 .selected-operator {
