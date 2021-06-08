@@ -35,6 +35,35 @@ let operationState = {
   operator: null,
 }
 
+let enteringSecondOperand = false;
+
+function isOperationReady() {
+  return operationState.a && operationState.b && operationState.operator;
+}
+
+function processOperation() {
+  // call operate on operation state
+  let result = operate(operationState.a, operationState.b, operationState.operator);
+
+  // update display with result
+  updateDisplay(result);
+
+  // make result to be first operand of next operation (change operation state)
+  operationState.a = result;
+
+  // make second operand of operation state to be null
+  operationState.b = null;
+
+  // make operator of operation state to be null
+  operationState.operator = null;
+
+  // set entering second operand to be true
+  enteringSecondOperand = true;
+
+  // unselect operators in gui
+  unselectOperators();
+}
+
 function unselectOperators() {
   const operators = document.querySelectorAll('.keys__operator');
   operators.forEach(operator => operator.classList.remove('selected-operator'))
@@ -42,11 +71,20 @@ function unselectOperators() {
 
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
+  let msg = '';
 
   digitKeys.forEach(key => {
     key.addEventListener('click', e => {
       unselectOperators();
-      populateDisplay(e.target.value);
+
+      if (enteringSecondOperand === true) {
+        clearDisplay();
+        msg = '';
+        enteringSecondOperand = false;
+      }
+
+      msg += e.target.value;
+      updateDisplay(msg);
     })
   });
 }
@@ -56,16 +94,27 @@ function operatorPressListener() {
 
   operatorKeys.forEach(key => {
     key.addEventListener('click', e => {
+      // get current display value
+      let displayValue = parseInt(display.textContent);
 
-      setOperator(e.target);
-
-      if (operationState.b === null && operationState.a !== null) {
-        setOperand('b', parseInt(display.textContent))
+      // set operand 2 if not set yet
+      if (operationState.a !== null && operationState.b === null) {
+        setOperand('b', displayValue);
       }
+      // set operand 1 if not set yet
       if (operationState.a === null && operationState.b === null) {
-        setOperand('a', parseInt(display.textContent));
+        setOperand('a', displayValue);
+        enteringSecondOperand = true;
       }
-
+      // if operation is ready then process it
+      if (isOperationReady()) {
+        console.log(operationState)
+        processOperation();
+      }
+      // if operation is not ready then set operator
+      if (!isOperationReady()) {
+        setOperator(e.target);
+      }
     })
   })
 }
@@ -88,8 +137,8 @@ function setOperand(prop, value) {
   operationState[prop] = value;
 }
 
-function populateDisplay(value) {
-  display.textContent += value;
+function updateDisplay(value) {
+  display.textContent = value;
 }
 
 function clearDisplay() {
