@@ -90,6 +90,13 @@ function handleOperatorClick(operator) {
   // e.target.classList.add('selected-operator');
 }
 
+function undo(msg) {
+  let msgArray = msg.split('');
+  msgArray.pop();
+  msg = msgArray.join('')
+  return msg;
+}
+
 function digitPressListener() {
   const digitKeys = document.querySelectorAll('.keys__digit');
   const digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -101,6 +108,10 @@ function digitPressListener() {
     msg = startEnteringSecondOperand(msg);
     if (digits.includes(e.key)) {
       msg += e.key.toString();
+      updateDisplay(msg)
+    }
+    if (e.code == 'Backspace') {
+      msg = undo(msg);
       updateDisplay(msg)
     }
     if (operators.includes(e.key)) {
